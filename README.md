@@ -30,7 +30,7 @@ Demonstrar capacidade arquitetural e técnica para:
 
 ## 🧠 Arquitetura
 
-```
+```mermaid
 graph TD
   A[Usuario envia CSV] --> B[MinIO]
   B -->|Webhook: PUT .csv| C[FastAPI Webhook Receiver]
