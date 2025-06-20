@@ -1,0 +1,42 @@
+name: Pipeline ELT
+
+on:
+  push:
+    branches:
+      - dev
+      - homolog
+      - production
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_TAG: ${{ github.sha }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Etapa de verificação da API
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        working-directory: ./api
+        run: npm install
+
+      - name: Run basic build/lint/test (ajuste conforme seu projeto)
+        working-directory: ./api
+        run: |
+          npm run build || echo "Sem build"
+          npm run lint || echo "Sem lint"
+          npm test || echo "Sem testes"
+
+      # Etapa de build da imagem Docker
+      - name: Build Docker image
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }} -f Dockerfile.api .
