@@ -28,7 +28,32 @@ Demonstrar capacidade arquitetural e técnica para:
 
 ---
 
-## 🧠 Arquitetura
+## 🧠 Arquitetura da Infraestrutura
+
+```mermaid
+graph TD
+  A[Usuário] --> B[MinIO - Object Storage]
+  B -->|Webhook PUT| C[FastAPI - Webhook Receiver (Container)]
+  C -->|Trigger| D[Processor - Python + Pandas (Container)]
+
+  subgraph Cluster Kubernetes
+    B
+    C
+    D
+  end
+
+  D -->|Read via MinIO SDK| B
+  D -->|Transforma CSV| E[Memória (DataFrame)]
+  D -->|POST JSON| F[Power BI Streaming Dataset]
+  D -->|Exporta CSV Tratado| G[MinIO - Bucket de Saída]
+
+  classDef storage fill:#f9f,stroke:#333,stroke-width:1px;
+  class B,G storage;
+```
+
+---
+
+## 🧠 Arquitetura da Pipeline
 
 ```mermaid
 graph TD
