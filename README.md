@@ -32,11 +32,11 @@ Demonstrar capacidade arquitetural e técnica para:
 
 ```mermaid
 graph TD
-  A[Usuário envia CSV] --> B[MinIO (Object Storage)]
+  A[Usuario envia CSV] --> B[MinIO (Object Storage)]
   B -->|Webhook: PUT .csv| C[FastAPI (Webhook Receiver)]
   C -->|Chama| D[Processor (Python + Pandas)]
 
-  D -->|Lê CSV via MinIO SDK| B
+  D -->|Le CSV via MinIO SDK| B
   D -->|Transforma com Pandas| E[DataFrame]
   D -->|POST JSON| F[Power BI Streaming Dataset]
 
