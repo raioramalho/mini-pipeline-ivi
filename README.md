@@ -32,9 +32,9 @@ Demonstrar capacidade arquitetural e técnica para:
 
 ```mermaid
 graph TD
-  A[Usuário] --> B[MinIO - Object Storage]
-  B -->|Webhook PUT| C[FastAPI - Webhook Receiver (Container)]
-  C -->|Trigger| D[Processor - Python + Pandas (Container)]
+  A[Usuario] --> B[MinIO Object Storage]
+  B -->|Webhook PUT| C[FastAPI Webhook Receiver]
+  C -->|Trigger| D[Processor Python + Pandas]
 
   subgraph Cluster Kubernetes
     B
@@ -43,12 +43,9 @@ graph TD
   end
 
   D -->|Read via MinIO SDK| B
-  D -->|Transforma CSV| E[Memória (DataFrame)]
+  D -->|Transforma CSV| E[Memoria DataFrame]
   D -->|POST JSON| F[Power BI Streaming Dataset]
-  D -->|Exporta CSV Tratado| G[MinIO - Bucket de Saída]
-
-  classDef storage fill:#f9f,stroke:#333,stroke-width:1px;
-  class B,G storage;
+  D -->|Exporta CSV Tratado| G[MinIO Saida]
 ```
 
 ---
