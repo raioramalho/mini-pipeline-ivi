@@ -1,4 +1,4 @@
-name: Pipeline ELT
+name: Check and Build API (Python)
 
 on:
   push:
@@ -19,24 +19,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Etapa de verificação da API
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          node-version: '18'
+          python-version: '3.11'  # ou ajuste para a sua versão
 
       - name: Install dependencies
         working-directory: ./api
-        run: npm install
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Run basic build/lint/test (ajuste conforme seu projeto)
+      - name: Run Lint/Test (opcional)
         working-directory: ./api
         run: |
-          npm run build || echo "Sem build"
-          npm run lint || echo "Sem lint"
-          npm test || echo "Sem testes"
+          . venv/bin/activate
+          # Roda lint e test se existirem
+          if [ -f "pytest.ini" ] || [ -d "tests" ]; then
+            pip install pytest
+            pytest || echo "Testes falharam"
+          fi
+          if [ -f "pyproject.toml" ]; then
+            pip install ruff || true
+            ruff check . || echo "Lint falhou"
+          fi
 
-      # Etapa de build da imagem Docker
       - name: Build Docker image
         run: |
           docker build -t ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }} -f Dockerfile.api .
