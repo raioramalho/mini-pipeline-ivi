@@ -1,4 +1,4 @@
-name: Check and Build API (Python)
+name: Check, Build and Push API (Python)
 
 on:
   push:
@@ -33,13 +33,20 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Lint/Test (opcional)
+      - name: Run Lint/Test (opcional)
         working-directory: ./api
         run: |
           . venv/bin/activate
           pip install pytest
           pytest || echo "Testes falharam"
 
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
       - name: Build Docker image
         run: |
           docker build -t ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -f Dockerfile.api .
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
