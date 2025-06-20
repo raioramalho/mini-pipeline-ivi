@@ -45,3 +45,9 @@ nohup.out
 
 # Node (caso use frontend depois)
 node_modules/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+

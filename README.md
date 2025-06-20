@@ -56,7 +56,7 @@ graph TD
 mini-pipeline-ivi/
 ├── dic/                    # Doc do projeto
 ├── api/                    # Código da API FastAPI (webhook)
-├── k8s/                    # Manifests do Kubernetes
+├── terraform/              # IaC para k8s, AWS, Azure e OpenStack
 ├── Dockerfile.api          # Imagem da API FastAPI
 ├── Dockerfile.processor    # Imagem do Processor
 ├── Makefile                # Comandos úteis para build e automações
@@ -77,6 +77,7 @@ mini-pipeline-ivi/
 - Power BI com Streaming Dataset configurado (chave de ingestão)
 - `make` instalado (opcional, mas recomendado)
 - `mc` (MinIO Client) instalado e configurado
+- Terraform instalado
 
 ### Passos
 
@@ -117,6 +118,14 @@ mc cp dados.csv local/teste/
 
 6. **Ver relatório no Power BI**
 > Configure seu dashboard com base no Streaming Dataset correspondente.
+
+## 🚀 Deploy com Terraform
+
+Escolha o ambiente desejado (`k8s`, `aws`, `azure` ou `openstack`):
+```bash
+make deploy ENV=k8s
+```
+Este comando executa `terraform apply` na pasta `terraform/<ENV>`.
 
 ---
 
