@@ -60,6 +60,9 @@ mini-pipeline-ivi/
 ├── Dockerfile.api          # Imagem da API FastAPI
 ├── Dockerfile.processor    # Imagem do Processor
 ├── Makefile                # Comandos úteis para build e automações
+├── .env.dev                # Variáveis para desenvolvimento
+├── .env.homolog            # Variáveis para homologação
+├── .env.prod               # Variáveis para produção
 ├── README.md               # Este arquivo
 ```
 
@@ -82,9 +85,15 @@ mini-pipeline-ivi/
 make build
 ```
 
+   Ajuste as variáveis de ambiente nos arquivos `.env.dev`, `.env.homolog` ou
+   `.env.prod` conforme necessário.
+
 2. **Subir tudo com Docker Compose**
+Escolha o ambiente desejado. Por exemplo:
 ```bash
-make dev
+make dev       # desenvolvimento
+make homolog   # homologação
+make prod      # produção
 ```
 
 3. **Ver logs da API**
