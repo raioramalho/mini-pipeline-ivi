@@ -28,7 +28,7 @@ Demonstrar capacidade arquitetural e técnica para:
 
 ---
 
-## 🧠 Arquitetura da Infraestrutura
+## 🧠 Arquitetura Infra/Pipeline
 
 ```mermaid
 graph TD
@@ -46,22 +46,6 @@ graph TD
   D -->|Transforma CSV| E[Memoria DataFrame]
   D -->|POST JSON| F[Power BI Streaming Dataset]
   D -->|Exporta CSV Tratado| G[MinIO Saida]
-```
-
----
-
-## 🧠 Arquitetura da Pipeline
-
-```mermaid
-graph TD
-  A[Usuario envia CSV] --> B[MinIO]
-  B -->|Webhook: PUT .csv| C[FastAPI Webhook Receiver]
-  C -->|Chama| D[Processor Python + Pandas]
-
-  D -->|Le CSV via MinIO SDK| B
-  D -->|Transforma com Pandas| E[DataFrame]
-  D -->|POST JSON| F[Power BI Streaming]
-  D -->|Exporta CSV tratado| G[MinIO - Dados tratados]
 ```
 
 ---
