@@ -1,0 +1,11 @@
+id_cliente,idade,genero,estado_civil,renda_mensal,tempo_como_cliente,numero_compras_mensal,valor_medio_compra,suporte_acionado,nps,churn
+1001,29,M,Solteiro,3500,12,5,150.0,2,8,0
+1002,45,F,Casado,8900,36,8,200.5,0,9,0
+1003,31,F,Solteiro,4200,8,3,90.0,1,6,1
+1004,38,M,Casado,12000,60,10,500.0,0,10,0
+1005,22,M,Solteiro,2800,4,1,70.0,3,5,1
+1006,50,F,Viúvo,10000,48,7,250.0,0,9,0
+1007,35,F,Casado,7300,24,5,180.0,1,7,0
+1008,27,M,Solteiro,3200,6,2,110.0,4,4,1
+1009,41,F,Divorciado,6700,30,6,210.0,1,8,0
+1010,33,M,Casado,5800,18,4,160.0,2,6,1

@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException
 from minio import Minio
 from io import BytesIO
+import requests
 import pandas as pd
 import os
 
@@ -37,6 +38,23 @@ async def receive_csv_event(req: Request):
         csv_data = obj.read()
 
         df = pd.read_csv(BytesIO(csv_data))
+        
+        data = df[["idade", "genero", "renda_mensal"]].to_dict(orient="records")
+        
+        # realizar. request com os dados em json
+        reques = {
+            "url": "https://api.powerbi.com/beta/da49a844-e2e3-40af-86a6-c3819d704f49/datasets/e2930daa-e554-4c90-80fd-a584ba525d16/rows?experience=power-bi&key=L%2Bs0U6BbOhep0N%2BttTjVIKbILZzCy%2FPUzfpvIfSD1GOjjNu6nSC1yr8vJ1yjLhHmlOJspR5UIQbQmWZsGLmCOg%3D%3D",
+            "method": "POST",
+            "headers": {"Content-Type": "application/json"},
+            "data": data
+        }
+
+        # realiza o post        
+        response = requests.post(reques["url"], headers=reques["headers"], json=reques["data"])
+        
+        if response.status_code != 200:
+            print(f"❌ Erro ao enviar dados: {response.status_code} - {response.text}")
+            
 
         print("✅ CSV processado com sucesso:")
         print(df.head())  # Aqui você pode substituir por outro tratamento
