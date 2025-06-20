@@ -14,7 +14,7 @@ Este projeto demonstra uma arquitetura de pipeline de dados totalmente orquestra
 
 ---
 
-## 👷🏾‍♂️ Arquitetura Infra/Pipeline
+## 👷🏾‍♂️ Arquitetura Infra/Pipeline [OPENSTACK]
 
 ```mermaid
 graph TD
