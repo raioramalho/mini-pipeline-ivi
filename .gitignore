@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+*.venv
+.env
+.venv/
+env/
+venv/
+pip-log.txt
+*.log
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# System
+.DS_Store
+Thumbs.db
+
+# Docker
+*.tar
+*.bak
+*.backup
+docker-compose.override.yml
+
+# Kubernetes / Helm / YAML overrides
+*.yaml~
+*.yml~
+*.tmp
+
+# Build
+*.egg-info/
+dist/
+build/
+*.zip
+
+# Logs
+logs/
+*.log
+nohup.out
+
+# Node (caso use frontend depois)
+node_modules/
