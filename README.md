@@ -1,28 +1,47 @@
 # 🧪 Mini Pipeline IVI — Projeto de Arquitetura de Dados
 
-Este projeto simula um pipeline real utilizado por empresas de ciência de dados, como a IVI Data Science. Ele é focado em ingestão, pré-processamento e entrega de dados estruturados via API, usando componentes simples, modernos e prontos para rodar em Kubernetes.
+Este projeto simula um pipeline real utilizado por empresas de ciência de dados, como a IVI Data Science. Ele é focado em ingestão, transformação e entrega de dados estruturados em tempo real, usando componentes modernos, desacoplados e prontos para rodar em Kubernetes.
 
 ---
 
 ## 🎯 Objetivo
 
 Demonstrar capacidade arquitetural e técnica para:
-- Receber arquivos CSV via API.
+- Receber arquivos CSV via upload.
 - Armazenar os arquivos em object storage (MinIO).
-- Realizar pré-processamento com Pandas.
-- Disponibilizar os dados tratados para consumo via API.
+- Detectar novos arquivos via webhook.
+- Processar os dados com Pandas de forma desacoplada.
+- Enviar os dados tratados diretamente para o Power BI (Streaming Dataset).
 - Rodar tudo em ambiente orquestrado com Kubernetes (MicroK8s no lab).
 
 ---
 
 ## ⚙️ Componentes
 
-| Serviço     | Tecnologia       | Função                                    |
-|-------------|------------------|-------------------------------------------|
-| API         | FastAPI + Uvicorn| Recebe arquivos CSV e entrega dados       |
-| Processor   | Python + Pandas  | Realiza o tratamento dos dados            |
-| Storage     | MinIO (S3-like)  | Armazena arquivos brutos e processados    |
-| Orquestração| Kubernetes       | Gerencia deploys, jobs, ingress etc.      |
+| Serviço     | Tecnologia         | Função                                          |
+|-------------|--------------------|--------------------------------------------------|
+| MinIO       | Object Storage S3  | Armazena arquivos CSV recebidos                 |
+| FastAPI     | Webhook Receiver   | Captura eventos do MinIO e aciona o Processor   |
+| Processor   | Python + Pandas    | Realiza o ETL, trata dados e envia ao Power BI  |
+| Power BI    | Streaming Dataset  | Visualiza dados tratados em tempo real          |
+| Orquestração| Kubernetes / Docker Compose | Gerencia deploys e execução local/lab     |
+
+---
+
+## 🧠 Arquitetura
+
+```mermaid
+graph TD
+  A[Usuário envia CSV] --> B[MinIO (Object Storage)]
+  B -->|Webhook: PUT .csv| C[FastAPI (Webhook Receiver)]
+  C -->|Chama| D[Processor (Python + Pandas)]
+
+  D -->|Lê CSV via MinIO SDK| B
+  D -->|Transforma com Pandas| E[DataFrame]
+  D -->|POST JSON| F[Power BI Streaming Dataset]
+
+  D -->|Opcional: Exporta CSV tratado| G[MinIO (Dados tratados)]
+```
 
 ---
 
@@ -30,55 +49,75 @@ Demonstrar capacidade arquitetural e técnica para:
 
 ```
 mini-pipeline-ivi/
-├── api/                    # Código da API FastAPI
-├── processor/              # Código de processamento Pandas
+├── api/                    # Código da API FastAPI (webhook)
+├── processor/              # Código de processamento e push (ETL)
 ├── k8s/                    # Manifests do Kubernetes
-├── Dockerfile.api          # Build da imagem da API
-├── Dockerfile.processor    # Build da imagem do processador
-├── Makefile                # Comandos úteis para build e deploy
+├── Dockerfile.api          # Imagem da API FastAPI
+├── Dockerfile.processor    # Imagem do Processor
+├── Makefile                # Comandos úteis para build e automações
 ├── README.md               # Este arquivo
 ```
 
 ---
 
-## 🚀 Como rodar
+## 🚀 Como rodar (modo local)
 
 ### Pré-requisitos
+
 - Docker
-- MicroK8s com ingress e storage habilitados
-- `kubectl` e `make` instalados
+- Docker Compose
+- Power BI com Streaming Dataset configurado (chave de ingestão)
+- `make` instalado (opcional, mas recomendado)
+- `mc` (MinIO Client) instalado e configurado
 
 ### Passos
 
-1. **Build das imagens**
+1. **Build dos serviços**
 ```bash
 make build
 ```
 
-2. **Deploy no cluster**
+2. **Subir tudo com Docker Compose**
 ```bash
-make deploy
+make dev
 ```
 
-3. **Acessar API**
-Configure seu `/etc/hosts`:
-```
-127.0.0.1   mini.local
+3. **Ver logs da API**
+```bash
+make logs
 ```
 
-Depois abra: [http://mini.local/upload](http://mini.local/upload)
+4. **Criar bucket e configurar webhook no MinIO**
+```bash
+mc alias set local http://localhost:9000 minioadmin minioadmin
+mc mb local/teste
+mc admin config set local notify_webhook:1 endpoint="http://api:8000/webhook/csv"
+mc admin service restart local
+mc event add local/teste arn:minio:sqs::1:webhook --event put --suffix .csv
+```
+
+5. **Enviar CSV manualmente**
+```bash
+mc cp dados.csv local/teste/
+```
+
+6. **Ver relatório no Power BI**
+> Configure seu dashboard com base no Streaming Dataset correspondente.
 
 ---
 
-## 🛠 Melhorias futuras
+## 🔄 Melhorias futuras
 
-- Trigger automático de processamento via upload
-- Integração com banco de dados para histórico
-- Frontend para visualização dos dados
-- Agendamento com Celery ou cronjob K8s
+- Persistência de dados tratados (ex: SQLite, PostgreSQL)
+- Agendamento de reprocessamento (Celery ou CronJob)
+- Upload de CSV via frontend (UI simples com Dropzone.js)
+- Fila para desacoplamento total do Processor (Redis, Kafka)
+- Autenticação nos endpoints
+- Observabilidade com Prometheus + Grafana
+- Versionamento de arquivos tratados (via timestamp ou hash)
 
 ---
 
 ## 👨‍💻 Autor
 
-Desenvolvido por Alan Ramalho como simulação de arquitetura moderna e prática para projetos reais em ciência de dados.
+Desenvolvido por **Alan Ramalho** como prova de conceito de arquitetura moderna, modular e orientada a eventos para uso real em projetos de ciência de dados e business intelligence.
