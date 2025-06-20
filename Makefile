@@ -2,8 +2,10 @@ build:
 	docker build -t mini-api -f Dockerfile.api .
 	docker build -t mini-processor -f Dockerfile.processor .
 
+ENV ?= k8s
+
 deploy:
-	kubectl apply -f k8s/
+	terraform -chdir=terraform/$(ENV) apply -auto-approve
 
 dev:
 	docker compose --env-file .env.dev up -d

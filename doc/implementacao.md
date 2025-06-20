@@ -25,7 +25,7 @@
   - `Dockerfile.processor`
   - `Makefile`
 - Estrutura de diretórios:
-  - `api/`, `k8s/`, `dic/`
+  - `api/`, `terraform/` (k8s, aws, azure, openstack), `dic/`
 
 ---
 
