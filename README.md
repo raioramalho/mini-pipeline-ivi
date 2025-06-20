@@ -28,10 +28,6 @@ Demonstrar capacidade arquitetural e técnica para:
 
 ---
 
-## 📊 Relatório em Tempo Real
-
-[![Abrir Relatório Power BI](https://img.shields.io/badge/Power%20BI-Dashboard-ffc107?logo=power-bi&style=for-the-badge)](https://app.powerbi.com/reportEmbed?reportId=b279dc54-8d50-427a-83b5-72c8220bc143&autoAuth=true&ctid=da49a844-e2e3-40af-86a6-c3819d704f49)
-
 ## 🧠 Arquitetura Infra/Pipeline
 
 ```mermaid
