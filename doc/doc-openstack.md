@@ -14,6 +14,27 @@ Este projeto demonstra uma arquitetura de pipeline de dados totalmente orquestra
 
 ---
 
+## 👷🏾‍♂️ Arquitetura Infra/Pipeline
+
+```mermaid
+graph TD
+  A[Usuario] --> B[OpenStack Swift]
+  B -->|Webhook PUT| C[FastAPI Webhook Receiver]
+  C -->|Trigger| D[Processor Python Pandas]
+
+  subgraph Infraestrutura OpenStack
+    B
+    H[VM com Docker ou Kubernetes]
+    C
+    D
+  end
+
+  D -->|Le CSV via Swift SDK| B
+  D -->|Transforma CSV| E[Memoria DataFrame]
+  D -->|POST JSON| F[Power BI Streaming]
+  D -->|Exporta CSV Tratado| G[Swift Bucket Saida]
+```
+
 ## 🧱 Componentes da Arquitetura
 
 | Camada             | Tecnologia                      | Função                                                  |
