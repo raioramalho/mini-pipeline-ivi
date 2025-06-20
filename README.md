@@ -49,8 +49,8 @@ graph TD
 
 ```
 mini-pipeline-ivi/
+├── dic/                    # Doc do projeto
 ├── api/                    # Código da API FastAPI (webhook)
-├── processor/              # Código de processamento e push (ETL)
 ├── k8s/                    # Manifests do Kubernetes
 ├── Dockerfile.api          # Imagem da API FastAPI
 ├── Dockerfile.processor    # Imagem do Processor
