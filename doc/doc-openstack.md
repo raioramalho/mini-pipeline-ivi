@@ -61,3 +61,16 @@ graph TD
 📤 Push via POST para Power BI
     ↓
 📊 Dashboards em tempo real
+
+---
+
+## 🛰️ Serviços OpenStack Utilizados
+
+| Serviço      | Função Principal                                         |
+|--------------|----------------------------------------------------------|
+| **Swift**    | Armazenamento de objetos para arquivos `.csv`            |
+| **Nova**     | Execução das VMs que hospedam a API e o Processor         |
+| **Magnum**   | Gerenciamento opcional de clusters Kubernetes/containers |
+| **Keystone** | Autenticação e autorização dos componentes               |
+| **Heat**     | Orquestração da infraestrutura como código               |
+
