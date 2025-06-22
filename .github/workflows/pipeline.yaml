@@ -64,13 +64,13 @@ jobs:
           chmod 600 ~/.kube/config
 
       - name: Terraform Init
-        working-directory: ./terraform/k8s
+        working-directory: ./terraform/k8s/${{ env.CURRENT_BRANCH }}
         run: terraform init
 
       - name: Terraform Plan
-        working-directory: ./terraform/k8s
+        working-directory: ./terraform/k8s/${{ env.CURRENT_BRANCH }}
         run: terraform plan -var="current_branch=${{ env.CURRENT_BRANCH }}"
 
       - name: Terraform Apply
-        working-directory: ./terraform/k8s
+        working-directory: ./terraform/k8s/${{ env.CURRENT_BRANCH }}
         run: terraform apply -auto-approve -var="current_branch=${{ env.CURRENT_BRANCH }}"
