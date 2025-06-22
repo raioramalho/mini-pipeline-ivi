@@ -19,39 +19,39 @@ jobs:
       CURRENT_BRANCH: ${{ github.ref_name }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      # - name: Checkout code
+      #   uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      # - name: Set up Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.11'
 
-      - name: Install dependencies
-        working-directory: ./api
-        run: |
-          python -m venv venv
-          . venv/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements.txt
+      # - name: Install dependencies
+      #   working-directory: ./api
+      #   run: |
+      #     python -m venv venv
+      #     . venv/bin/activate
+      #     pip install --upgrade pip
+      #     pip install -r requirements.txt
 
-      - name: Run Lint/Test (opcional)
-        working-directory: ./api
-        run: |
-          . venv/bin/activate
-          pip install pytest
-          pytest || echo "Testes falharam"
+      # - name: Run Lint/Test (opcional)
+      #   working-directory: ./api
+      #   run: |
+      #     . venv/bin/activate
+      #     pip install pytest
+      #     pytest || echo "Testes falharam"
 
-      - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      # - name: Log in to GitHub Container Registry
+      #   run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build Docker image
-        run: |
-          docker build -t ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -f Dockerfile.api .
+      # - name: Build Docker image
+      #   run: |
+      #     docker build -t ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -f Dockerfile.api .
 
-      - name: Push Docker image
-        run: |
-          docker push ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+      # - name: Push Docker image
+      #   run: |
+      #     docker push ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
       ### 🌱 Terraform Deploy ###
       - name: Set up Terraform
@@ -67,9 +67,9 @@ jobs:
         working-directory: ./terraform/k8s/${{ env.CURRENT_BRANCH }}
         run: terraform init
 
-      - name: Terraform Plan
-        working-directory: ./terraform/k8s/${{ env.CURRENT_BRANCH }}
-        run: terraform plan -var="current_branch=${{ env.CURRENT_BRANCH }}"
+      # - name: Terraform Plan
+      #   working-directory: ./terraform/k8s/${{ env.CURRENT_BRANCH }}
+      #   run: terraform plan -var="current_branch=${{ env.CURRENT_BRANCH }}"
 
       - name: Terraform Apply
         working-directory: ./terraform/k8s/${{ env.CURRENT_BRANCH }}
