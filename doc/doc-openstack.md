@@ -28,36 +28,13 @@ Este projeto demonstra uma arquitetura de pipeline de dados totalmente orquestra
 
 ## 🛰️ Serviços OpenStack Utilizados
 
-| Serviço      | Função                                                           |
-|--------------|------------------------------------------------------------------|
-| **Swift**    | Armazenamento de objetos (entrada e saída de arquivos `.csv`)   |
-| **Nova**     | Execução de instâncias (VMs) para os serviços do pipeline        |
-| **Magnum**   | (Opcional) Gerenciamento de containers com Kubernetes ou Docker |
-| **Keystone** | Autenticação e autorização entre os serviços                     |
-| **Heat**     | Orquestração de infraestrutura como código (IaC)                 |
-
----
-
-## ⚙️ Arquitetura do Pipeline
-
-```mermaid
-graph TD
-  A[Usuário envia CSV] --> B[OpenStack Swift]
-  B -->|Webhook PUT| C[FastAPI Webhook Receiver]
-  C -->|Trigger| D[Processor (Python + Pandas)]
-
-  subgraph OpenStack Infra
-    B
-    C
-    D
-    H[VM ou Container gerenciado]
-  end
-
-  D -->|Leitura via Swift SDK| B
-  D -->|Transformação com Pandas| E[DataFrame em Memória]
-  D -->|POST JSON| F[Power BI Streaming Dataset]
-  D -->|Exporta CSV tratado| G[Swift - Saída]
-```
+| Serviço       | Função                                                           |
+|---------------|------------------------------------------------------------------|
+| **Swift**     | Armazenamento de objetos (entrada e saída de arquivos `.csv`)    |
+| **Nova**      | Execução de instâncias (VMs) para os serviços do pipeline        |
+| **Magnum**    | (Opcional) Gerenciamento de containers com Kubernetes ou Docker  |
+| **Keystone**  | Autenticação e autorização entre os serviços                     |
+| **Terraform** | Orquestração de infraestrutura como código (IaC)            |
 
 ---
 
