@@ -19,21 +19,21 @@ jobs:
       CURRENT_BRANCH: ${{ github.ref_name }}
 
     steps:
-      # - name: Checkout code
-      #   uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # - name: Set up Python
-      #   uses: actions/setup-python@v5
-      #   with:
-      #     python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-      # - name: Install dependencies
-      #   working-directory: ./api
-      #   run: |
-      #     python -m venv venv
-      #     . venv/bin/activate
-      #     pip install --upgrade pip
-      #     pip install -r requirements.txt
+      - name: Install dependencies
+        working-directory: ./api
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
       # - name: Run Lint/Test (opcional)
       #   working-directory: ./api
