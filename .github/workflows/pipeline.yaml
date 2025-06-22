@@ -1,4 +1,4 @@
-name: Check, Build and Push API (Python)
+name: Check, Build, Push and Deploy (API)
 
 on:
   push:
@@ -9,12 +9,14 @@ on:
   pull_request:
 
 jobs:
-  build:
+  build_and_deploy:
     runs-on: ubuntu-latest
+    environment: raiosystems
 
     env:
       IMAGE_NAME: ${{ github.repository }}-${{ github.ref_name }}
       IMAGE_TAG: latest
+      CURRENT_BRANCH: ${{ github.ref_name }}
 
     steps:
       - name: Checkout code
@@ -50,3 +52,25 @@ jobs:
       - name: Push Docker image
         run: |
           docker push ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
+      ### 🌱 Terraform Deploy ###
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Terraform Init
+        working-directory: ./terraform/k8s
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: ./terraform/k8s
+        run: terraform plan -var="current_branch=${{ env.CURRENT_BRANCH }}"
+
+      - name: Terraform Apply
+        working-directory: ./terraform/k8s
+        run: terraform apply -auto-approve -var="current_branch=${{ env.CURRENT_BRANCH }}"

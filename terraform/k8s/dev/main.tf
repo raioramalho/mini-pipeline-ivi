@@ -1,18 +1,98 @@
-variable "namespace" {
-  type    = string
-  default = "default"
+##########################
+# Locais Dinâmicos
+##########################
+
+locals {  
+  image_tag      = "ghcr.io/raioramalho/mini-pipeline-ivi-${var.current_branch}:latest"
 }
 
-variable "image_env" {
-  description = "Ambiente da imagem (dev, homolog, prod)"
-  default = "${var.image_env}"
-  type        = string
+##########################
+# API FastAPI
+##########################
+
+resource "kubernetes_deployment" "mini_pipeline_api" {
+  metadata {
+    name      = "mini-pipeline-api"
+    namespace = "default"
+    labels = {
+      app = "mini-pipeline-api"
+    }
+  }
+
+  spec {
+    replicas = 1
+
+    selector {
+      match_labels = {
+        app = "mini-pipeline-api"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          app = "mini-pipeline-api"
+        }
+      }
+
+      spec {
+        image_pull_secrets {
+          name = "ghcr-secret"
+        }
+
+        container {
+          name  = "mini-pipeline-api"
+          image = local.image_tag
+
+          port {
+            container_port = 80
+          }
+
+          resources {
+            limits = {
+              cpu    = "200m"
+              memory = "256Mi"
+            }
+            requests = {
+              cpu    = "100m"
+              memory = "128Mi"
+            }
+          }
+        }
+      }
+    }
+  }
 }
+
+resource "kubernetes_service" "mini_pipeline_api" {
+  metadata {
+    name      = "mini-pipeline-api"
+    namespace = "default"
+  }
+
+  spec {
+    selector = {
+      app = "mini-pipeline-api"
+    }
+
+    port {
+      port        = 80
+      target_port = 80
+      protocol    = "TCP"
+    }
+
+    type = "ClusterIP"
+  }
+}
+
+##########################
+# MinIO
+##########################
 
 resource "kubernetes_deployment" "minio" {
   metadata {
     name      = "minio"
-    namespace = var.namespace
+    namespace = "default"
     labels = {
       app = "minio"
     }
@@ -20,6 +100,7 @@ resource "kubernetes_deployment" "minio" {
 
   spec {
     replicas = 1
+
     selector {
       match_labels = {
         app = "minio"
@@ -36,19 +117,36 @@ resource "kubernetes_deployment" "minio" {
       spec {
         container {
           name  = "minio"
-          image = "quay.io/minio/minio:latest"
+          image = "minio/minio:latest"
           args  = ["server", "/data"]
+
           env {
-            name  = "MINIO_ACCESS_KEY"
-            value = "minioadmin"
+            name  = "MINIO_ROOT_USER"
+            value = "minio"
           }
+
           env {
-            name  = "MINIO_SECRET_KEY"
-            value = "minioadmin"
+            name  = "MINIO_ROOT_PASSWORD"
+            value = "minio123"
           }
+
           port {
             container_port = 9000
           }
+
+          port {
+            container_port = 9001
+          }
+
+          volume_mount {
+            name       = "minio-data"
+            mount_path = "/data"
+          }
+        }
+
+        volume {
+          name = "minio-data"
+          empty_dir {}
         }
       }
     }
@@ -58,80 +156,34 @@ resource "kubernetes_deployment" "minio" {
 resource "kubernetes_service" "minio" {
   metadata {
     name      = "minio"
-    namespace = var.namespace
+    namespace = "default"
   }
 
   spec {
     selector = {
       app = "minio"
     }
+
     port {
+      name        = "api"
       port        = 9000
       target_port = 9000
     }
-    type = "ClusterIP"
-  }
-}
 
-resource "kubernetes_deployment" "api" {
-  metadata {
-    name      = "mini-pipeline-ivi"
-    namespace = var.namespace
-    labels = {
-      app = "api"
-    }
-  }
-
-  spec {
-    replicas = 1
-
-    selector {
-      match_labels = {
-        app = "api"
-      }
-    }
-
-    template {
-      metadata {
-        labels = {
-          app = "api"
-        }
-      }
-
-      spec {
-        service_account_name = "api-sa"
-
-        container {
-          name  = "api"
-          image = "ghcr.io/raioramalho/mini-pipeline-ivi-${var.image_env}:latest"
-
-          port {
-            container_port = 8000
-          }
-        }
-
-        image_pull_secrets {
-          name = "ghcr-pull-secret"
-        }
-      }
-    }
-  }
-}
-
-resource "kubernetes_service" "api" {
-  metadata {
-    name      = "mini-pipeline-ivi"
-    namespace = var.namespace
-  }
-
-  spec {
-    selector = {
-      app = "api"
-    }
     port {
-      port        = 8000
-      target_port = 8000
+      name        = "console"
+      port        = 9001
+      target_port = 9001
     }
+
     type = "ClusterIP"
   }
+}
+
+##########################
+# Outputs úteis
+##########################
+
+output "image_usada_na_api" {
+  value = local.image_tag
 }
