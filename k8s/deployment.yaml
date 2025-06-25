@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mini-pipeline-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mini-pipeline
+  template:
+    metadata:
+      labels:
+        app: mini-pipeline
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/raioramalho/mini-pipeline-ivi-dev:latest
+          ports:
+            - containerPort: 80
